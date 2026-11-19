@@ -104,7 +104,7 @@ mvn test
 mvn clean package -DskipTests
 ```
 
-詳細說明請見 [DEVELOPMENT.md](DEVELOPMENT.md)。
+詳細開發說明未隨公開版發布。
 
 ## 安全說明
 
