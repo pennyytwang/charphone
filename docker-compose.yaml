@@ -1,0 +1,56 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: charphone-demo-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-charphone_demo_root}
+      MYSQL_DATABASE: mydb
+      DB_USER: ${DB_USER:-charphone}
+      DB_PASS: ${DB_PASS:-charphone_demo_app}
+      DB_RO_USER: ${DB_RO_USER:-charphone_ro}
+      DB_RO_PASS: ${DB_RO_PASS:-charphone_demo_ro}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    image: charphone-demo:latest
+    container_name: charphone-demo-web
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      CATALINA_OPTS: "-Dfile.encoding=UTF-8"
+      DB_URL: "jdbc:mysql://db:3306/mydb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+      DB_USER: ${DB_USER:-charphone}
+      DB_PASS: ${DB_PASS:-charphone_demo_app}
+      DB_RO_USER: ${DB_RO_USER:-charphone_ro}
+      DB_RO_PASS: ${DB_RO_PASS:-charphone_demo_ro}
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:8080}
+      TOKEN_PEPPER: ${TOKEN_PEPPER:-charphone_demo_pepper}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-demo1234}
+      AI_GATEWAY_API_KEY: ${AI_GATEWAY_API_KEY:-demo-api-key-charphone}
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  mysql_data:
+
+networks:
+  default:
+    name: charphone_demo

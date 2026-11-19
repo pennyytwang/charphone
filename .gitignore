@@ -1,0 +1,43 @@
+# Maven build output
+app/target/
+app/*.war
+*.class
+
+# Eclipse
+app/.classpath
+app/.project
+app/.settings/
+
+# VS Code
+.vscode/
+
+# IDE
+*.iml
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Sensitive data
+data/
+
+# Env files (secrets) - only commit .env.example/.env.sample
+.env
+*.env
+
+# Test files
+HelloWorld.java
+
+# Browser session cookies (contains JSESSIONID)
+cookies.txt
+
+# Logs
+*.log
+
+# Deploy
+deploy_package/
+
+# Backup
+backup_*.sql
+migration_backup_*/
